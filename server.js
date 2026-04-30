@@ -103,6 +103,12 @@ app.post("/api/recognize", upload.single("image"), async (req, res) => {
 
     res.json({ foods: normalizeRecognizedFoods(parseResponseJson(response)) });
   } catch (error) {
+    const status = error.status || error.code;
+    if (status === 401 || String(error.message || "").includes("Incorrect API key")) {
+      return res.status(401).json({
+        error: "OpenAI API key 无效。请检查项目根目录 .env 中的 OPENAI_API_KEY，重启 npm start 后再试。"
+      });
+    }
     res.status(500).json({ error: error.message || "Food recognition failed." });
   }
 });
@@ -173,7 +179,7 @@ async function searchUsda(query) {
   url.searchParams.set("pageSize", "8");
   url.searchParams.set("dataType", "Foundation,SR Legacy,Survey (FNDDS),Branded");
   const response = await fetch(url);
-  if (!response.ok) throw new Error(`USDA lookup failed with ${response.status}`);
+  if (!response.ok) return [];
   const data = await response.json();
   return (data.foods || []).map(nutrientMapFromUsda).filter(Boolean);
 }

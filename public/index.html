@@ -3,80 +3,233 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FitPlate 低成本食物营养识别</title>
+    <title>FitPlate 营养计划</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="shell">
-      <section class="hero">
-        <div>
-          <span class="eyebrow">OpenAI Vision + USDA + Open Food Facts</span>
-          <h1>FitPlate 食物营养识别</h1>
-          <p>上传食物图片或手动输入食物名。后端识别候选食物，用户确认后查询营养数据库并计算热量与宏量营养。</p>
-        </div>
-        <div class="status-card" id="serverStatus">正在检查后端配置...</div>
-      </section>
-
-      <section class="grid">
-        <article class="panel">
-          <div class="panel-head">
-            <span>1</span>
-            <div>
-              <h2>上传图片识别</h2>
-              <p>API key 只存在后端，前端不会暴露。</p>
-            </div>
-          </div>
-          <label class="upload-box" for="imageInput">
-            <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
-            <strong>选择食物图片</strong>
-            <small>后端会用 OpenAI vision model 识别候选食物</small>
-          </label>
-          <img id="previewImage" class="preview" alt="食物预览" hidden />
-          <button class="primary" id="recognizeButton" type="button">识别图片</button>
-        </article>
-
-        <article class="panel">
-          <div class="panel-head">
-            <span>2</span>
-            <div>
-              <h2>手动输入</h2>
-              <p>也可以跳过图片，直接输入食物名和克数。</p>
-            </div>
-          </div>
-          <label>
-            食物名称
-            <input id="manualFoodName" type="text" placeholder="例如：grilled chicken breast / 米饭 / banana" />
-          </label>
-          <label>
-            克数
-            <input id="manualGrams" type="number" min="1" value="100" />
-          </label>
-          <button class="secondary" id="manualAddButton" type="button">加入确认列表</button>
-        </article>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head">
-          <span>3</span>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">FP</div>
           <div>
-            <h2>确认候选食物</h2>
-            <p>置信度低于 0.7 的结果必须人工确认。你可以修改食物名称和克数。</p>
+            <h1>FitPlate</h1>
+            <p>训练目标营养记录</p>
           </div>
         </div>
-        <div id="candidateList" class="candidate-list"></div>
-      </section>
 
-      <section class="panel">
-        <div class="panel-head">
-          <span>4</span>
-          <div>
-            <h2>营养计算结果</h2>
-            <p>确认后优先查询 USDA FoodData Central，搜不到再查 Open Food Facts。</p>
-          </div>
+        <nav class="nav-tabs" aria-label="主要视图">
+          <button class="nav-tab active" data-view="dashboard" type="button"><span aria-hidden="true">◎</span>今日</button>
+          <button class="nav-tab" data-view="profile" type="button"><span aria-hidden="true">◌</span>目标</button>
+          <button class="nav-tab" data-view="plan" type="button"><span aria-hidden="true">◍</span>食谱</button>
+          <button class="nav-tab" data-view="log" type="button"><span aria-hidden="true">◐</span>记录</button>
+          <button class="nav-tab" data-view="summary" type="button"><span aria-hidden="true">◒</span>总结</button>
+        </nav>
+
+        <div class="status-panel">
+          <span class="status-label">目标</span>
+          <strong id="sidebarGoal">减脂</strong>
+          <span id="sidebarCalories">-- kcal / 日</span>
         </div>
-        <div id="results" class="results"></div>
-      </section>
-    </main>
+      </aside>
+
+      <main class="main">
+        <section class="topbar">
+          <div>
+            <p class="eyebrow" id="todayLabel">今天</p>
+            <h2 id="viewTitle">今日营养仪表盘</h2>
+          </div>
+          <button class="primary-button" id="quickAddButton" type="button">
+            <span aria-hidden="true">＋</span>
+            记一餐
+          </button>
+        </section>
+
+        <section class="view active" id="dashboardView" aria-labelledby="viewTitle">
+          <div class="metric-grid">
+            <article class="metric-tile"><span>已摄入</span><strong id="consumedCalories">0</strong><small>kcal</small></article>
+            <article class="metric-tile"><span>剩余热量</span><strong id="remainingCalories">0</strong><small>kcal</small></article>
+            <article class="metric-tile"><span>基础代谢</span><strong id="bmrValue">0</strong><small>kcal</small></article>
+            <article class="metric-tile"><span>日目标</span><strong id="targetCalories">0</strong><small>kcal</small></article>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel wide">
+              <div class="panel-header">
+                <div>
+                  <span class="section-kicker">营养进度</span>
+                  <h3>今日目标达成</h3>
+                </div>
+                <span class="pill" id="todayScore">--</span>
+              </div>
+              <div class="macro-bars" id="macroBars"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="section-kicker">三餐</span>
+                  <h3>今日记录</h3>
+                </div>
+              </div>
+              <div class="meal-list" id="todayMeals"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="profileView">
+          <form class="panel form-panel" id="profileForm">
+            <div class="panel-header">
+              <div>
+                <span class="section-kicker">身体状况与健身目标</span>
+                <h3>计算基础代谢与每日摄入</h3>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                性别
+                <select id="sexInput" required>
+                  <option value="" selected disabled>请选择性别</option>
+                  <option value="female">女性</option>
+                  <option value="male">男性</option>
+                </select>
+              </label>
+              <label>年龄<input id="ageInput" type="number" min="12" max="90" placeholder="例如：28" required /></label>
+              <label>身高 cm<input id="heightInput" type="number" min="120" max="230" placeholder="例如：168" required /></label>
+              <label>体重 kg<input id="weightInput" type="number" min="35" max="220" step="0.1" placeholder="例如：62" required /></label>
+              <label>
+                活动水平
+                <select id="activityInput" required>
+                  <option value="" selected disabled>请选择活动水平</option>
+                  <option value="1.2">久坐</option>
+                  <option value="1.375">轻度活动</option>
+                  <option value="1.55">每周训练 3-5 次</option>
+                  <option value="1.725">高强度训练</option>
+                  <option value="1.9">运动员级别</option>
+                </select>
+              </label>
+              <label>
+                健身目标
+                <select id="goalInput" required>
+                  <option value="" selected disabled>请选择健身目标</option>
+                  <option value="fatLoss">减脂</option>
+                  <option value="muscleGain">增肌</option>
+                  <option value="maintain">维持</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="segmented" role="group" aria-label="目标强度">
+              <button type="button" data-intensity="gentle">温和</button>
+              <button class="active" type="button" data-intensity="standard">标准</button>
+              <button type="button" data-intensity="aggressive">进阶</button>
+            </div>
+
+            <button class="primary-button" type="submit">更新分析</button>
+          </form>
+        </section>
+
+        <section class="view" id="planView">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="section-kicker">食谱制定</span>
+                <h3>每日摄入计划</h3>
+              </div>
+              <button class="ghost-button" id="refreshPlanButton" type="button">重排</button>
+            </div>
+            <div class="plan-summary" id="planSummary"></div>
+            <div class="recipe-grid" id="recipeGrid"></div>
+          </div>
+        </section>
+
+        <section class="view" id="logView">
+          <div class="record-layout">
+            <form class="panel form-panel" id="mealForm">
+              <div class="panel-header">
+                <div>
+                  <span class="section-kicker">每日饮食记录</span>
+                  <h3>拍照识别或手动输入</h3>
+                </div>
+              </div>
+
+              <label>
+                餐次
+                <select id="mealTypeInput">
+                  <option value="breakfast">早餐</option>
+                  <option value="lunch">午餐</option>
+                  <option value="dinner">晚餐</option>
+                  <option value="snack">加餐</option>
+                </select>
+              </label>
+
+              <label class="upload-box" for="photoInput">
+                <input id="photoInput" type="file" accept="image/*" />
+                <span>上传食物照片</span>
+                <small id="photoName">上传后由后端调用 OpenAI Vision 识别候选，API key 不暴露在前端</small>
+              </label>
+
+              <div class="recognition-panel" id="recognitionPanel"></div>
+
+              <div class="food-row">
+                <label>食物<input id="foodNameInput" type="text" list="foodOptions" placeholder="例如：鸡胸肉糙米饭" /></label>
+                <label>份量 g<input id="gramsInput" type="number" min="10" max="2000" placeholder="例如：250" /></label>
+              </div>
+              <datalist id="foodOptions"></datalist>
+              <button class="ghost-button lookup-button" id="lookupFoodButton" type="button">查询营养库并自动填充</button>
+              <div class="recognition-panel" id="foodSearchPanel"></div>
+
+              <div class="food-row">
+                <label>热量 kcal<input id="calorieInput" type="number" min="0" placeholder="自动计算" /></label>
+                <label>蛋白质 g<input id="proteinInput" type="number" min="0" placeholder="自动计算" /></label>
+              </div>
+
+              <div class="food-row">
+                <label>碳水 g<input id="carbInput" type="number" min="0" placeholder="自动计算" /></label>
+                <label>脂肪 g<input id="fatInput" type="number" min="0" placeholder="自动计算" /></label>
+              </div>
+
+              <button class="primary-button" type="submit">添加记录</button>
+            </form>
+
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="section-kicker">记录明细</span>
+                  <h3>今日所有食物</h3>
+                </div>
+              </div>
+              <div class="meal-list detailed" id="logMeals"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="summaryView">
+          <div class="summary-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="section-kicker">每日总结</span>
+                  <h3>今天表现</h3>
+                </div>
+              </div>
+              <div class="summary-card" id="dailySummary"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="section-kicker">每周总结</span>
+                  <h3>近 7 天趋势</h3>
+                </div>
+              </div>
+              <div class="week-chart" id="weekChart"></div>
+              <div class="summary-card" id="weeklySummary"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
 
     <script src="app.js"></script>
   </body>
