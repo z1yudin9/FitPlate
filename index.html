@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Animated Landing</title>
+    <style>
+      :root {
+        --bg: #101714;
+        --ink: #f7fff9;
+        --muted: #b7c8bd;
+        --green: #78d89a;
+        --coral: #ff8a67;
+        --gold: #ffd166;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 20% 20%, rgba(120, 216, 154, 0.2), transparent 32%),
+          radial-gradient(circle at 80% 10%, rgba(255, 138, 103, 0.16), transparent 30%),
+          linear-gradient(135deg, #101714, #17241d 55%, #0c1210);
+        color: var(--ink);
+        font-family:
+          Inter, "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+      }
+
+      main {
+        position: relative;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .hero {
+        position: relative;
+        z-index: 2;
+        width: min(760px, 100%);
+        text-align: center;
+        animation: rise 900ms ease-out both;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 38px;
+        padding: 0 14px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--muted);
+        backdrop-filter: blur(16px);
+      }
+
+      .badge-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 18px var(--green);
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+
+      h1 {
+        margin: 24px 0 16px;
+        font-size: clamp(3rem, 10vw, 7.5rem);
+        line-height: 0.92;
+        letter-spacing: 0;
+      }
+
+      p {
+        width: min(620px, 100%);
+        margin: 0 auto 30px;
+        color: var(--muted);
+        font-size: clamp(1rem, 2vw, 1.25rem);
+      }
+
+      .cta-row {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      a {
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #101714;
+        background: var(--green);
+        text-decoration: none;
+        font-weight: 800;
+        transition:
+          transform 180ms ease,
+          background 180ms ease;
+      }
+
+      a:hover {
+        transform: translateY(-2px);
+        background: #9aefb8;
+      }
+
+      .ghost {
+        color: var(--ink);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .ghost:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .orbit {
+        position: absolute;
+        inset: auto;
+        width: min(66vw, 680px);
+        aspect-ratio: 1;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 50%;
+        animation: spin 18s linear infinite;
+      }
+
+      .orbit::before,
+      .orbit::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+      }
+
+      .orbit::before {
+        width: 24px;
+        height: 24px;
+        top: 10%;
+        left: 18%;
+        background: var(--coral);
+        box-shadow: 0 0 32px rgba(255, 138, 103, 0.8);
+      }
+
+      .orbit::after {
+        width: 16px;
+        height: 16px;
+        right: 8%;
+        bottom: 24%;
+        background: var(--gold);
+        box-shadow: 0 0 28px rgba(255, 209, 102, 0.8);
+      }
+
+      .ring {
+        position: absolute;
+        width: min(90vw, 980px);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background:
+          conic-gradient(from 0deg, transparent, rgba(120, 216, 154, 0.22), transparent 34%),
+          conic-gradient(from 180deg, transparent, rgba(255, 255, 255, 0.08), transparent 28%);
+        mask: radial-gradient(circle, transparent 58%, #000 59%, #000 61%, transparent 62%);
+        animation: spin 28s linear infinite reverse;
+      }
+
+      .float-card {
+        position: absolute;
+        z-index: 1;
+        width: 180px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--muted);
+        backdrop-filter: blur(14px);
+        animation: float 4s ease-in-out infinite;
+      }
+
+      .float-card strong {
+        display: block;
+        color: var(--ink);
+        font-size: 1.4rem;
+      }
+
+      .float-card.one {
+        left: 8vw;
+        top: 22vh;
+      }
+
+      .float-card.two {
+        right: 9vw;
+        bottom: 18vh;
+        animation-delay: -1.2s;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-16px);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        50% {
+          transform: scale(1.4);
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 720px) {
+        body {
+          overflow: auto;
+        }
+
+        main {
+          min-height: 100svh;
+        }
+
+        .float-card {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="ring" aria-hidden="true"></div>
+      <div class="orbit" aria-hidden="true"></div>
+
+      <section class="hero" aria-labelledby="page-title">
+        <div class="badge"><span class="badge-dot" aria-hidden="true"></span>Live animated page</div>
+        <h1 id="page-title">Move With Light</h1>
+        <p>一个干净的单页动画示例，适合直接放到 GitHub Pages 或任何静态站点仓库里。</p>
+        <div class="cta-row">
+          <a href="#start">开始探索</a>
+          <a class="ghost" href="https://github.com/">查看 GitHub</a>
+        </div>
+      </section>
+
+      <aside class="float-card one" aria-label="动画信息">
+        <strong>60fps</strong>
+        CSS-only motion
+      </aside>
+      <aside class="float-card two" aria-label="页面信息">
+        <strong>1 file</strong>
+        index.html ready
+      </aside>
+    </main>
+  </body>
+</html>
