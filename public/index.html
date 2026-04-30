@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitPlate 低成本食物营养识别</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <span class="eyebrow">OpenAI Vision + USDA + Open Food Facts</span>
+          <h1>FitPlate 食物营养识别</h1>
+          <p>上传食物图片或手动输入食物名。后端识别候选食物，用户确认后查询营养数据库并计算热量与宏量营养。</p>
+        </div>
+        <div class="status-card" id="serverStatus">正在检查后端配置...</div>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <div class="panel-head">
+            <span>1</span>
+            <div>
+              <h2>上传图片识别</h2>
+              <p>API key 只存在后端，前端不会暴露。</p>
+            </div>
+          </div>
+          <label class="upload-box" for="imageInput">
+            <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
+            <strong>选择食物图片</strong>
+            <small>后端会用 OpenAI vision model 识别候选食物</small>
+          </label>
+          <img id="previewImage" class="preview" alt="食物预览" hidden />
+          <button class="primary" id="recognizeButton" type="button">识别图片</button>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <span>2</span>
+            <div>
+              <h2>手动输入</h2>
+              <p>也可以跳过图片，直接输入食物名和克数。</p>
+            </div>
+          </div>
+          <label>
+            食物名称
+            <input id="manualFoodName" type="text" placeholder="例如：grilled chicken breast / 米饭 / banana" />
+          </label>
+          <label>
+            克数
+            <input id="manualGrams" type="number" min="1" value="100" />
+          </label>
+          <button class="secondary" id="manualAddButton" type="button">加入确认列表</button>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <span>3</span>
+          <div>
+            <h2>确认候选食物</h2>
+            <p>置信度低于 0.7 的结果必须人工确认。你可以修改食物名称和克数。</p>
+          </div>
+        </div>
+        <div id="candidateList" class="candidate-list"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <span>4</span>
+          <div>
+            <h2>营养计算结果</h2>
+            <p>确认后优先查询 USDA FoodData Central，搜不到再查 Open Food Facts。</p>
+          </div>
+        </div>
+        <div id="results" class="results"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
