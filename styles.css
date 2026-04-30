@@ -380,6 +380,11 @@ select {
   color: var(--ink);
 }
 
+input::placeholder,
+select:invalid {
+  color: #98a59e;
+}
+
 input:focus,
 select:focus {
   outline: 2px solid rgba(36, 122, 85, 0.22);

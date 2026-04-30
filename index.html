@@ -86,23 +86,32 @@
             </div>
 
             <div class="form-grid">
-              <label>性别<select id="sexInput"><option value="female">女性</option><option value="male">男性</option></select></label>
-              <label>年龄<input id="ageInput" type="number" min="12" max="90" value="28" /></label>
-              <label>身高 cm<input id="heightInput" type="number" min="120" max="230" value="168" /></label>
-              <label>体重 kg<input id="weightInput" type="number" min="35" max="220" step="0.1" value="62" /></label>
+              <label>
+                性别
+                <select id="sexInput" required>
+                  <option value="" selected disabled>例如：女性</option>
+                  <option value="female">女性</option>
+                  <option value="male">男性</option>
+                </select>
+              </label>
+              <label>年龄<input id="ageInput" type="number" min="12" max="90" placeholder="例如：28" required /></label>
+              <label>身高 cm<input id="heightInput" type="number" min="120" max="230" placeholder="例如：168" required /></label>
+              <label>体重 kg<input id="weightInput" type="number" min="35" max="220" step="0.1" placeholder="例如：62" required /></label>
               <label>
                 活动水平
-                <select id="activityInput">
+                <select id="activityInput" required>
+                  <option value="" selected disabled>例如：每周训练 3-5 次</option>
                   <option value="1.2">久坐</option>
                   <option value="1.375">轻度活动</option>
-                  <option value="1.55" selected>每周训练 3-5 次</option>
+                  <option value="1.55">每周训练 3-5 次</option>
                   <option value="1.725">高强度训练</option>
                   <option value="1.9">运动员级别</option>
                 </select>
               </label>
               <label>
                 健身目标
-                <select id="goalInput">
+                <select id="goalInput" required>
+                  <option value="" selected disabled>例如：减脂</option>
                   <option value="fatLoss">减脂</option>
                   <option value="muscleGain">增肌</option>
                   <option value="maintain">维持</option>
@@ -157,24 +166,25 @@
               <label class="upload-box" for="photoInput">
                 <input id="photoInput" type="file" accept="image/*" />
                 <span>上传食物照片</span>
-                <small id="photoName">原型版会给出可选食物库，真实识别可后续接 API</small>
+                <small id="photoName">上传后会用浏览器端 CV 模型识别候选，并自动匹配营养库</small>
               </label>
 
               <div class="recognition-panel" id="recognitionPanel"></div>
 
               <div class="food-row">
-                <label>食物<input id="foodNameInput" type="text" placeholder="例如：鸡胸肉饭" /></label>
-                <label>份量 g<input id="gramsInput" type="number" min="10" max="2000" value="250" /></label>
+                <label>食物<input id="foodNameInput" type="text" list="foodOptions" placeholder="例如：鸡胸肉糙米饭" /></label>
+                <label>份量 g<input id="gramsInput" type="number" min="10" max="2000" placeholder="例如：250" /></label>
+              </div>
+              <datalist id="foodOptions"></datalist>
+
+              <div class="food-row">
+                <label>热量 kcal<input id="calorieInput" type="number" min="0" placeholder="自动计算" /></label>
+                <label>蛋白质 g<input id="proteinInput" type="number" min="0" placeholder="自动计算" /></label>
               </div>
 
               <div class="food-row">
-                <label>热量 kcal<input id="calorieInput" type="number" min="0" value="520" /></label>
-                <label>蛋白质 g<input id="proteinInput" type="number" min="0" value="32" /></label>
-              </div>
-
-              <div class="food-row">
-                <label>碳水 g<input id="carbInput" type="number" min="0" value="58" /></label>
-                <label>脂肪 g<input id="fatInput" type="number" min="0" value="15" /></label>
+                <label>碳水 g<input id="carbInput" type="number" min="0" placeholder="自动计算" /></label>
+                <label>脂肪 g<input id="fatInput" type="number" min="0" placeholder="自动计算" /></label>
               </div>
 
               <button class="primary-button" type="submit">添加记录</button>
@@ -219,6 +229,8 @@
       </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1"></script>
     <script src="app.js"></script>
   </body>
 </html>

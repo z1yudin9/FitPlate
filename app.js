@@ -1,27 +1,27 @@
-const storageKey = "fitplate-state-v1";
+const storageKey = "fitplate-state-v2";
 
 const foodLibrary = [
-  { name: "鸡胸肉糙米饭", grams: 350, calories: 560, protein: 45, carbs: 62, fat: 13, keywords: ["鸡胸", "鸡肉", "糙米", "chicken"] },
-  { name: "三文鱼藜麦碗", grams: 320, calories: 610, protein: 38, carbs: 46, fat: 28, keywords: ["三文鱼", "藜麦", "salmon"] },
-  { name: "牛肉全麦卷", grams: 280, calories: 520, protein: 34, carbs: 54, fat: 18, keywords: ["牛肉", "卷饼", "beef", "wrap"] },
-  { name: "希腊酸奶燕麦", grams: 260, calories: 390, protein: 24, carbs: 48, fat: 10, keywords: ["酸奶", "燕麦", "yogurt", "oat"] },
-  { name: "鸡蛋牛油果吐司", grams: 230, calories: 430, protein: 22, carbs: 36, fat: 22, keywords: ["鸡蛋", "牛油果", "吐司", "egg", "toast"] },
-  { name: "豆腐蔬菜荞麦面", grams: 360, calories: 500, protein: 26, carbs: 70, fat: 12, keywords: ["豆腐", "荞麦", "面", "tofu", "noodle"] },
-  { name: "虾仁杂粮沙拉", grams: 300, calories: 420, protein: 33, carbs: 40, fat: 14, keywords: ["虾", "沙拉", "shrimp", "salad"] },
-  { name: "香蕉乳清奶昔", grams: 420, calories: 360, protein: 31, carbs: 48, fat: 6, keywords: ["香蕉", "乳清", "奶昔", "banana", "shake"] },
-  { name: "番茄鸡蛋盖饭", grams: 380, calories: 620, protein: 24, carbs: 88, fat: 18, keywords: ["番茄", "西红柿", "盖饭", "tomato"] },
-  { name: "清炒时蔬米饭", grams: 330, calories: 430, protein: 12, carbs: 72, fat: 10, keywords: ["蔬菜", "青菜", "米饭", "rice", "vegetable"] },
-  { name: "牛奶全麦面包", grams: 260, calories: 410, protein: 20, carbs: 58, fat: 11, keywords: ["牛奶", "面包", "milk", "bread"] },
-  { name: "水煮蛋", grams: 100, calories: 155, protein: 13, carbs: 1, fat: 11, keywords: ["水煮蛋", "boiled", "egg"] }
+  { name: "鸡胸肉糙米饭", per100: { calories: 160, protein: 12.8, carbs: 17.7, fat: 3.7 }, keywords: ["鸡胸", "鸡肉", "糙米", "米饭", "chicken", "rice"] },
+  { name: "三文鱼藜麦碗", per100: { calories: 191, protein: 11.9, carbs: 14.4, fat: 8.8 }, keywords: ["三文鱼", "鲑鱼", "藜麦", "salmon", "quinoa", "fish"] },
+  { name: "牛肉全麦卷", per100: { calories: 186, protein: 12.1, carbs: 19.3, fat: 6.4 }, keywords: ["牛肉", "卷饼", "全麦", "beef", "wrap", "burrito"] },
+  { name: "希腊酸奶燕麦", per100: { calories: 150, protein: 9.2, carbs: 18.5, fat: 3.8 }, keywords: ["酸奶", "燕麦", "蓝莓", "yogurt", "oat", "granola"] },
+  { name: "鸡蛋牛油果吐司", per100: { calories: 187, protein: 9.6, carbs: 15.7, fat: 9.6 }, keywords: ["鸡蛋", "牛油果", "吐司", "egg", "avocado", "toast"] },
+  { name: "豆腐蔬菜荞麦面", per100: { calories: 139, protein: 7.2, carbs: 19.4, fat: 3.3 }, keywords: ["豆腐", "蔬菜", "荞麦", "面", "tofu", "noodle", "vegetable"] },
+  { name: "虾仁杂粮沙拉", per100: { calories: 140, protein: 11, carbs: 13.3, fat: 4.7 }, keywords: ["虾", "沙拉", "杂粮", "shrimp", "salad"] },
+  { name: "香蕉乳清奶昔", per100: { calories: 86, protein: 7.4, carbs: 11.4, fat: 1.4 }, keywords: ["香蕉", "乳清", "奶昔", "banana", "shake", "smoothie"] },
+  { name: "番茄鸡蛋盖饭", per100: { calories: 163, protein: 6.3, carbs: 23.2, fat: 4.7 }, keywords: ["番茄", "西红柿", "鸡蛋", "米饭", "tomato", "egg", "rice"] },
+  { name: "清炒时蔬米饭", per100: { calories: 130, protein: 3.6, carbs: 21.8, fat: 3 }, keywords: ["蔬菜", "青菜", "米饭", "rice", "vegetable", "greens"] },
+  { name: "牛奶全麦面包", per100: { calories: 158, protein: 7.7, carbs: 22.3, fat: 4.2 }, keywords: ["牛奶", "面包", "全麦", "milk", "bread"] },
+  { name: "水煮蛋", per100: { calories: 155, protein: 13, carbs: 1.1, fat: 10.6 }, keywords: ["水煮蛋", "鸡蛋", "boiled egg", "egg"] },
+  { name: "苹果", per100: { calories: 52, protein: 0.3, carbs: 13.8, fat: 0.2 }, keywords: ["苹果", "apple"] },
+  { name: "香蕉", per100: { calories: 89, protein: 1.1, carbs: 22.8, fat: 0.3 }, keywords: ["香蕉", "banana"] },
+  { name: "意面番茄肉酱", per100: { calories: 168, protein: 7.1, carbs: 25, fat: 4.5 }, keywords: ["意面", "意大利面", "番茄", "pasta", "spaghetti"] },
+  { name: "汉堡", per100: { calories: 295, protein: 15, carbs: 25, fat: 14 }, keywords: ["汉堡", "burger", "cheeseburger"] },
+  { name: "披萨", per100: { calories: 266, protein: 11, carbs: 33, fat: 10 }, keywords: ["披萨", "pizza"] },
+  { name: "寿司", per100: { calories: 143, protein: 5.8, carbs: 28, fat: 0.8 }, keywords: ["寿司", "sushi"] }
 ];
 
-const mealNames = {
-  breakfast: "早餐",
-  lunch: "午餐",
-  dinner: "晚餐",
-  snack: "加餐"
-};
-
+const mealNames = { breakfast: "早餐", lunch: "午餐", dinner: "晚餐", snack: "加餐" };
 const viewTitles = {
   dashboard: "今日营养仪表盘",
   profile: "身体状况与目标分析",
@@ -31,31 +31,18 @@ const viewTitles = {
 };
 
 const defaultState = {
-  profile: {
-    sex: "female",
-    age: 28,
-    height: 168,
-    weight: 62,
-    activity: 1.55,
-    goal: "fatLoss",
-    intensity: "standard"
-  },
+  profile: { sex: "", age: "", height: "", weight: "", activity: "", goal: "", intensity: "standard" },
   logs: {},
   planSeed: 0
 };
 
 let state = loadState();
-
-function todayKey(offset = 0) {
-  const date = new Date();
-  date.setDate(date.getDate() + offset);
-  return date.toISOString().slice(0, 10);
-}
+let visionModelPromise = null;
 
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey));
-    return saved ? { ...defaultState, ...saved } : structuredClone(defaultState);
+    return saved ? { ...defaultState, ...saved, profile: { ...defaultState.profile, ...saved.profile } } : structuredClone(defaultState);
   } catch {
     return structuredClone(defaultState);
   }
@@ -65,24 +52,35 @@ function saveState() {
   localStorage.setItem(storageKey, JSON.stringify(state));
 }
 
+function todayKey(offset = 0) {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  return date.toISOString().slice(0, 10);
+}
+
+function isProfileComplete(profile = state.profile) {
+  return profile.sex && profile.age && profile.height && profile.weight && profile.activity && profile.goal;
+}
+
 function calculateTargets(profile = state.profile) {
-  const { sex, age, height, weight, activity, goal, intensity } = profile;
-  const bmr =
-    sex === "male"
-      ? 10 * weight + 6.25 * height - 5 * age + 5
-      : 10 * weight + 6.25 * height - 5 * age - 161;
-  const maintenance = bmr * Number(activity);
+  if (!isProfileComplete(profile)) return null;
+  const age = Number(profile.age);
+  const height = Number(profile.height);
+  const weight = Number(profile.weight);
+  const activity = Number(profile.activity);
+  const bmr = profile.sex === "male" ? 10 * weight + 6.25 * height - 5 * age + 5 : 10 * weight + 6.25 * height - 5 * age - 161;
+  const maintenance = bmr * activity;
   const adjustments = {
     fatLoss: { gentle: -250, standard: -450, aggressive: -650 },
     muscleGain: { gentle: 180, standard: 320, aggressive: 480 },
     maintain: { gentle: 0, standard: 0, aggressive: 0 }
   };
-  const calories = Math.max(1200, maintenance + adjustments[goal][intensity]);
-  const proteinRate = goal === "muscleGain" ? 2 : goal === "fatLoss" ? 1.8 : 1.6;
+  const intensity = profile.intensity || "standard";
+  const calories = Math.max(1200, maintenance + adjustments[profile.goal][intensity]);
+  const proteinRate = profile.goal === "muscleGain" ? 2 : profile.goal === "fatLoss" ? 1.8 : 1.6;
   const protein = weight * proteinRate;
-  const fat = (calories * (goal === "fatLoss" ? 0.25 : 0.28)) / 9;
+  const fat = (calories * (profile.goal === "fatLoss" ? 0.25 : 0.28)) / 9;
   const carbs = Math.max(80, (calories - protein * 4 - fat * 9) / 4);
-
   return {
     bmr: Math.round(bmr),
     maintenance: Math.round(maintenance),
@@ -110,7 +108,7 @@ function sumLogs(logs) {
 }
 
 function formatNumber(value) {
-  return Math.round(value).toLocaleString("zh-CN");
+  return Math.round(Number(value || 0)).toLocaleString("zh-CN");
 }
 
 function createId() {
@@ -119,7 +117,7 @@ function createId() {
 }
 
 function goalLabel(goal = state.profile.goal) {
-  return { fatLoss: "减脂", muscleGain: "增肌", maintain: "维持" }[goal];
+  return { fatLoss: "减脂", muscleGain: "增肌", maintain: "维持" }[goal] || "待设置";
 }
 
 function macroStatus(actual, target) {
@@ -142,15 +140,14 @@ function renderDashboard() {
   const targets = calculateTargets();
   const logs = getTodayLogs();
   const totals = sumLogs(logs);
-  const remaining = targets.calories - totals.calories;
 
-  document.getElementById("consumedCalories").textContent = formatNumber(totals.calories);
-  document.getElementById("remainingCalories").textContent = formatNumber(remaining);
-  document.getElementById("bmrValue").textContent = formatNumber(targets.bmr);
-  document.getElementById("targetCalories").textContent = formatNumber(targets.calories);
   document.getElementById("sidebarGoal").textContent = goalLabel();
-  document.getElementById("sidebarCalories").textContent = `${formatNumber(targets.calories)} kcal / 日`;
-  document.getElementById("todayScore").textContent = scoreLabel(totals, targets);
+  document.getElementById("sidebarCalories").textContent = targets ? `${formatNumber(targets.calories)} kcal / 日` : "先填写目标";
+  document.getElementById("consumedCalories").textContent = formatNumber(totals.calories);
+  document.getElementById("remainingCalories").textContent = targets ? formatNumber(targets.calories - totals.calories) : "--";
+  document.getElementById("bmrValue").textContent = targets ? formatNumber(targets.bmr) : "--";
+  document.getElementById("targetCalories").textContent = targets ? formatNumber(targets.calories) : "--";
+  document.getElementById("todayScore").textContent = targets ? scoreLabel(totals, targets) : "待设置";
 
   renderMacroBars(totals, targets);
   renderMeals("todayMeals", logs, false);
@@ -169,13 +166,18 @@ function scoreLabel(totals, targets) {
 }
 
 function renderMacroBars(totals, targets) {
+  const container = document.getElementById("macroBars");
+  if (!targets) {
+    container.innerHTML = `<div class="empty-state">请先在“目标”中填写身体信息和健身目标，系统会自动计算每日热量与营养计划。</div>`;
+    return;
+  }
   const macros = [
     ["calories", "热量", totals.calories, targets.calories, "kcal"],
     ["protein", "蛋白质", totals.protein, targets.protein, "g"],
     ["carbs", "碳水", totals.carbs, targets.carbs, "g"],
     ["fat", "脂肪", totals.fat, targets.fat, "g"]
   ];
-  document.getElementById("macroBars").innerHTML = macros
+  container.innerHTML = macros
     .map(([key, label, actual, target, unit]) => {
       const width = Math.min(120, Math.round((actual / target) * 100 || 0));
       return `
@@ -197,7 +199,6 @@ function renderMeals(containerId, logs, detailed) {
     container.innerHTML = `<div class="empty-state">今天还没有饮食记录。</div>`;
     return;
   }
-
   container.innerHTML = logs
     .map(
       (item) => `
@@ -218,9 +219,15 @@ function renderMeals(containerId, logs, detailed) {
 
 function renderPlan() {
   const targets = calculateTargets();
+  const summary = document.getElementById("planSummary");
+  const grid = document.getElementById("recipeGrid");
+  if (!targets) {
+    summary.innerHTML = `<div class="empty-state">先填写“目标”，这里会生成对应的每日摄入计划。</div>`;
+    grid.innerHTML = "";
+    return;
+  }
   const meals = buildPlan(targets);
-
-  document.getElementById("planSummary").innerHTML = [
+  summary.innerHTML = [
     ["热量", `${formatNumber(targets.calories)} kcal`],
     ["蛋白质", `${formatNumber(targets.protein)} g`],
     ["碳水", `${formatNumber(targets.carbs)} g`],
@@ -228,8 +235,7 @@ function renderPlan() {
   ]
     .map(([label, value]) => `<div class="plan-chip"><span>${label}</span><strong>${value}</strong></div>`)
     .join("");
-
-  document.getElementById("recipeGrid").innerHTML = meals
+  grid.innerHTML = meals
     .map(
       (meal) => `
       <article class="recipe-card">
@@ -248,9 +254,9 @@ function renderPlan() {
 
 function buildPlan(targets) {
   const templates = [
-    ["breakfast", "希腊酸奶燕麦 + 蓝莓", "◧", 0.24, 0.23, 0.28, 0.18],
-    ["lunch", "鸡胸肉糙米饭 + 彩椒", "◩", 0.34, 0.36, 0.36, 0.28],
-    ["dinner", "三文鱼藜麦碗 + 西兰花", "◪", 0.32, 0.31, 0.26, 0.42],
+    ["breakfast", "希腊酸奶燕麦", "◧", 0.24, 0.23, 0.28, 0.18],
+    ["lunch", "鸡胸肉糙米饭", "◩", 0.34, 0.36, 0.36, 0.28],
+    ["dinner", "三文鱼藜麦碗", "◪", 0.32, 0.31, 0.26, 0.42],
     ["snack", "香蕉乳清奶昔", "◫", 0.1, 0.1, 0.1, 0.12]
   ];
   const rotated = templates.slice(state.planSeed % templates.length).concat(templates.slice(0, state.planSeed % templates.length));
@@ -267,6 +273,12 @@ function buildPlan(targets) {
 
 function renderSummary() {
   const targets = calculateTargets();
+  if (!targets) {
+    document.getElementById("dailySummary").innerHTML = `<span>填写目标后，这里会显示每日达成反馈。</span>`;
+    document.getElementById("weeklySummary").innerHTML = `<span>有饮食记录后，这里会显示近 7 天趋势。</span>`;
+    document.getElementById("weekChart").innerHTML = "";
+    return;
+  }
   const todayTotals = sumLogs(getTodayLogs());
   const gap = targets.calories - todayTotals.calories;
   const dailyTone =
@@ -279,7 +291,6 @@ function renderSummary() {
     todayTotals.protein >= targets.protein * 0.9
       ? "蛋白质达成度不错。"
       : `蛋白质还差约 ${formatNumber(targets.protein - todayTotals.protein)}g。`;
-
   document.getElementById("dailySummary").innerHTML = `
     <strong>${scoreLabel(todayTotals, targets)}</strong>
     <span>${dailyTone} ${proteinTone}</span>
@@ -294,14 +305,12 @@ function renderSummary() {
   const weeklyTotals = week.map((day) => sumLogs(day.logs));
   const avgCalories = weeklyTotals.reduce((sum, day) => sum + day.calories, 0) / 7;
   const hitDays = weeklyTotals.filter((day) => day.calories >= targets.calories * 0.9 && day.calories <= targets.calories * 1.1).length;
-
   document.getElementById("weekChart").innerHTML = week
     .map((day, index) => {
       const height = Math.max(8, Math.min(150, (weeklyTotals[index].calories / targets.calories) * 130 || 8));
       return `<div class="day-bar"><div class="day-bar-fill" style="height:${height}px"></div><span>${day.label}</span></div>`;
     })
     .join("");
-
   document.getElementById("weeklySummary").innerHTML = `
     <strong>近 7 天日均 ${formatNumber(avgCalories)} kcal</strong>
     <span>${hitDays} 天进入目标热量区间。当前目标是 ${formatNumber(targets.calories)} kcal / 日。</span>
@@ -310,64 +319,145 @@ function renderSummary() {
 
 function fillProfileForm() {
   const profile = state.profile;
-  document.getElementById("sexInput").value = profile.sex;
-  document.getElementById("ageInput").value = profile.age;
-  document.getElementById("heightInput").value = profile.height;
-  document.getElementById("weightInput").value = profile.weight;
-  document.getElementById("activityInput").value = profile.activity;
-  document.getElementById("goalInput").value = profile.goal;
+  document.getElementById("sexInput").value = profile.sex || "";
+  document.getElementById("ageInput").value = profile.age || "";
+  document.getElementById("heightInput").value = profile.height || "";
+  document.getElementById("weightInput").value = profile.weight || "";
+  document.getElementById("activityInput").value = profile.activity || "";
+  document.getElementById("goalInput").value = profile.goal || "";
   document.querySelectorAll("[data-intensity]").forEach((button) => {
-    button.classList.toggle("active", button.dataset.intensity === profile.intensity);
+    button.classList.toggle("active", button.dataset.intensity === (profile.intensity || "standard"));
   });
 }
 
-function applyFoodToForm(food) {
-  document.getElementById("foodNameInput").value = food.name;
-  document.getElementById("gramsInput").value = food.grams;
-  document.getElementById("calorieInput").value = food.calories;
-  document.getElementById("proteinInput").value = food.protein;
-  document.getElementById("carbInput").value = food.carbs;
-  document.getElementById("fatInput").value = food.fat;
+function populateFoodOptions() {
+  document.getElementById("foodOptions").innerHTML = foodLibrary.map((food) => `<option value="${food.name}"></option>`).join("");
 }
 
-function getFoodCandidates(fileName) {
-  const normalized = fileName.toLowerCase();
-  const matched = foodLibrary.filter((food) => food.keywords.some((keyword) => normalized.includes(keyword.toLowerCase())));
-  return matched.length ? matched.slice(0, 4) : foodLibrary.slice(0, 6);
-}
-
-function showRecognitionSuggestions(file) {
-  const panel = document.getElementById("recognitionPanel");
-  const suggestions = getFoodCandidates(file.name);
-  const hasKeywordMatch = suggestions.some((food) =>
-    food.keywords.some((keyword) => file.name.toLowerCase().includes(keyword.toLowerCase()))
+function findFood(query) {
+  const normalized = String(query || "").trim().toLowerCase();
+  if (!normalized) return null;
+  return (
+    foodLibrary.find((food) => food.name.toLowerCase() === normalized) ||
+    foodLibrary.find((food) => food.name.toLowerCase().includes(normalized)) ||
+    foodLibrary.find((food) => food.keywords.some((keyword) => normalized.includes(keyword.toLowerCase()) || keyword.toLowerCase().includes(normalized)))
   );
-  const imageUrl = URL.createObjectURL(file);
+}
+
+function nutritionFor(food, grams) {
+  const ratio = Number(grams || 0) / 100;
+  return {
+    calories: Math.round(food.per100.calories * ratio),
+    protein: Number((food.per100.protein * ratio).toFixed(1)),
+    carbs: Number((food.per100.carbs * ratio).toFixed(1)),
+    fat: Number((food.per100.fat * ratio).toFixed(1))
+  };
+}
+
+function applyFoodToForm(food, grams = 250) {
+  document.getElementById("foodNameInput").value = food.name;
+  document.getElementById("gramsInput").value = grams;
+  updateNutritionFromFood();
+}
+
+function updateNutritionFromFood() {
+  const food = findFood(document.getElementById("foodNameInput").value);
+  const grams = Number(document.getElementById("gramsInput").value);
+  if (!food || !grams) return;
+  const nutrition = nutritionFor(food, grams);
+  document.getElementById("calorieInput").value = nutrition.calories;
+  document.getElementById("proteinInput").value = nutrition.protein;
+  document.getElementById("carbInput").value = nutrition.carbs;
+  document.getElementById("fatInput").value = nutrition.fat;
+}
+
+function getFoodCandidates(text, limit = 6) {
+  const normalized = String(text || "").toLowerCase();
+  const scored = foodLibrary
+    .map((food) => {
+      const score = food.keywords.reduce((total, keyword) => {
+        const key = keyword.toLowerCase();
+        return total + (normalized.includes(key) ? 3 : key.includes(normalized) ? 1 : 0);
+      }, food.name.toLowerCase().includes(normalized) ? 2 : 0);
+      return { food, score };
+    })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map((item) => item.food);
+  return scored.length ? scored.slice(0, limit) : foodLibrary.slice(0, limit);
+}
+
+function renderSuggestionButtons(panel, imageUrl, title, detail, suggestions) {
   panel.classList.add("active");
   panel.innerHTML = `
     <div class="photo-review">
-      <img src="${imageUrl}" alt="已上传的食物照片" />
+      <img id="uploadedFoodPreview" src="${imageUrl}" alt="已上传的食物照片" />
       <div>
-        <strong>${hasKeywordMatch ? "找到可能匹配的食物" : "请从常见食物中选择"}</strong>
-        <p>${hasKeywordMatch ? "候选来自图片文件名中的食物关键词，请确认后填入。" : "当前原型没有接入真实视觉模型，因此不会再随机猜测食物。"}</p>
+        <strong>${title}</strong>
+        <p>${detail}</p>
       </div>
     </div>
     <div class="suggestion-grid">
       ${suggestions
-        .map(
-          (food, index) => `
-          <button class="suggestion-button" type="button" data-suggestion="${index}">
-            <strong>${food.name}</strong>
-            <span>${food.grams}g · ${food.calories} kcal · 蛋白 ${food.protein}g</span>
-          </button>
-        `
-        )
+        .map((food, index) => {
+          const nutrition = nutritionFor(food, 250);
+          return `
+            <button class="suggestion-button" type="button" data-suggestion="${index}">
+              <strong>${food.name}</strong>
+              <span>250g 约 ${nutrition.calories} kcal · 蛋白 ${nutrition.protein}g</span>
+            </button>
+          `;
+        })
         .join("")}
     </div>
   `;
   panel.querySelectorAll("[data-suggestion]").forEach((button) => {
-    button.addEventListener("click", () => applyFoodToForm(suggestions[Number(button.dataset.suggestion)]));
+    button.addEventListener("click", () => applyFoodToForm(suggestions[Number(button.dataset.suggestion)], 250));
   });
+}
+
+async function getVisionModel() {
+  if (!window.mobilenet) throw new Error("CV 模型脚本未加载");
+  if (!visionModelPromise) visionModelPromise = window.mobilenet.load();
+  return visionModelPromise;
+}
+
+function waitForImage(image) {
+  if (image.complete && image.naturalWidth > 0) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    image.addEventListener("load", resolve, { once: true });
+    image.addEventListener("error", reject, { once: true });
+  });
+}
+
+async function showRecognitionSuggestions(file) {
+  const panel = document.getElementById("recognitionPanel");
+  const imageUrl = URL.createObjectURL(file);
+  renderSuggestionButtons(panel, imageUrl, "正在识别图片", "正在加载浏览器端 CV 模型，请稍候。", foodLibrary.slice(0, 4));
+  try {
+    const model = await getVisionModel();
+    const image = document.getElementById("uploadedFoodPreview");
+    await waitForImage(image);
+    const predictions = await model.classify(image, 5);
+    const predictionText = predictions.map((item) => item.className).join(", ");
+    const suggestions = getFoodCandidates(predictionText, 6);
+    renderSuggestionButtons(
+      panel,
+      imageUrl,
+      "CV 识别候选已生成",
+      `识别标签：${predictionText}。请选择最接近的食物，系统会按营养库自动计算。`,
+      suggestions
+    );
+  } catch (error) {
+    const suggestions = getFoodCandidates(file.name, 6);
+    renderSuggestionButtons(
+      panel,
+      imageUrl,
+      "CV 模型暂时不可用",
+      "已切换为食物库候选。高精度识别需要后端视觉 API，静态网页不能安全保存 API 密钥。",
+      suggestions
+    );
+  }
 }
 
 function addMeal(item) {
@@ -382,16 +472,13 @@ function bindEvents() {
   document.querySelectorAll(".nav-tab").forEach((button) => {
     button.addEventListener("click", () => setView(button.dataset.view));
   });
-
   document.getElementById("quickAddButton").addEventListener("click", () => setView("log"));
-
   document.querySelectorAll("[data-intensity]").forEach((button) => {
     button.addEventListener("click", () => {
       state.profile.intensity = button.dataset.intensity;
       fillProfileForm();
     });
   });
-
   document.getElementById("profileForm").addEventListener("submit", (event) => {
     event.preventDefault();
     state.profile = {
@@ -401,39 +488,38 @@ function bindEvents() {
       weight: Number(document.getElementById("weightInput").value),
       activity: Number(document.getElementById("activityInput").value),
       goal: document.getElementById("goalInput").value,
-      intensity: state.profile.intensity
+      intensity: state.profile.intensity || "standard"
     };
     saveState();
     renderDashboard();
     setView("plan");
   });
-
   document.getElementById("refreshPlanButton").addEventListener("click", () => {
     state.planSeed += 1;
     saveState();
     renderPlan();
   });
-
   document.getElementById("photoInput").addEventListener("change", (event) => {
     const file = event.target.files[0];
     if (!file) return;
     document.getElementById("photoName").textContent = file.name;
     showRecognitionSuggestions(file);
   });
-
+  document.getElementById("foodNameInput").addEventListener("input", updateNutritionFromFood);
+  document.getElementById("gramsInput").addEventListener("input", updateNutritionFromFood);
   document.getElementById("mealForm").addEventListener("submit", (event) => {
     event.preventDefault();
+    updateNutritionFromFood();
     addMeal({
       meal: document.getElementById("mealTypeInput").value,
       name: document.getElementById("foodNameInput").value || "未命名食物",
-      grams: Number(document.getElementById("gramsInput").value),
-      calories: Number(document.getElementById("calorieInput").value),
-      protein: Number(document.getElementById("proteinInput").value),
-      carbs: Number(document.getElementById("carbInput").value),
-      fat: Number(document.getElementById("fatInput").value)
+      grams: Number(document.getElementById("gramsInput").value || 0),
+      calories: Number(document.getElementById("calorieInput").value || 0),
+      protein: Number(document.getElementById("proteinInput").value || 0),
+      carbs: Number(document.getElementById("carbInput").value || 0),
+      fat: Number(document.getElementById("fatInput").value || 0)
     });
   });
-
   document.getElementById("logMeals").addEventListener("click", (event) => {
     const id = event.target.dataset.delete;
     if (!id) return;
@@ -442,20 +528,11 @@ function bindEvents() {
     saveState();
     renderDashboard();
   });
-
   document.getElementById("recipeGrid").addEventListener("click", (event) => {
     const title = event.target.dataset.plan;
     if (!title) return;
     const planMeal = buildPlan(calculateTargets()).find((item) => item.title === title);
-    addMeal({
-      meal: planMeal.meal,
-      name: planMeal.title,
-      grams: 300,
-      calories: planMeal.calories,
-      protein: planMeal.protein,
-      carbs: planMeal.carbs,
-      fat: planMeal.fat
-    });
+    addMeal({ meal: planMeal.meal, name: planMeal.title, grams: 300, calories: planMeal.calories, protein: planMeal.protein, carbs: planMeal.carbs, fat: planMeal.fat });
     setView("dashboard");
   });
 }
@@ -466,6 +543,7 @@ function init() {
     day: "numeric",
     weekday: "long"
   }).format(new Date());
+  populateFoodOptions();
   fillProfileForm();
   bindEvents();
   renderDashboard();
