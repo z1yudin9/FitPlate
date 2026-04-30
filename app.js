@@ -18,7 +18,26 @@ const foodLibrary = [
   { name: "意面番茄肉酱", per100: { calories: 168, protein: 7.1, carbs: 25, fat: 4.5 }, keywords: ["意面", "意大利面", "番茄", "pasta", "spaghetti"] },
   { name: "汉堡", per100: { calories: 295, protein: 15, carbs: 25, fat: 14 }, keywords: ["汉堡", "burger", "cheeseburger"] },
   { name: "披萨", per100: { calories: 266, protein: 11, carbs: 33, fat: 10 }, keywords: ["披萨", "pizza"] },
-  { name: "寿司", per100: { calories: 143, protein: 5.8, carbs: 28, fat: 0.8 }, keywords: ["寿司", "sushi"] }
+  { name: "寿司", per100: { calories: 143, protein: 5.8, carbs: 28, fat: 0.8 }, keywords: ["寿司", "sushi"] },
+  { name: "白米饭", per100: { calories: 116, protein: 2.6, carbs: 25.9, fat: 0.3 }, keywords: ["米饭", "白饭", "rice"] },
+  { name: "馒头", per100: { calories: 223, protein: 7, carbs: 47, fat: 1.1 }, keywords: ["馒头", "mantou", "steamed bun"] },
+  { name: "面条", per100: { calories: 137, protein: 4.5, carbs: 25, fat: 2.1 }, keywords: ["面条", "noodle"] },
+  { name: "红薯", per100: { calories: 86, protein: 1.6, carbs: 20.1, fat: 0.1 }, keywords: ["红薯", "地瓜", "sweet potato"] },
+  { name: "土豆", per100: { calories: 77, protein: 2, carbs: 17, fat: 0.1 }, keywords: ["土豆", "马铃薯", "potato"] },
+  { name: "玉米", per100: { calories: 96, protein: 3.4, carbs: 21, fat: 1.5 }, keywords: ["玉米", "corn"] },
+  { name: "燕麦片", per100: { calories: 389, protein: 16.9, carbs: 66.3, fat: 6.9 }, keywords: ["燕麦", "oat", "oatmeal"] },
+  { name: "鸡腿肉", per100: { calories: 181, protein: 24, carbs: 0, fat: 9 }, keywords: ["鸡腿", "鸡肉", "chicken thigh"] },
+  { name: "瘦牛肉", per100: { calories: 250, protein: 26, carbs: 0, fat: 15 }, keywords: ["牛肉", "beef"] },
+  { name: "猪里脊", per100: { calories: 143, protein: 21, carbs: 0, fat: 6 }, keywords: ["猪肉", "里脊", "pork"] },
+  { name: "虾仁", per100: { calories: 99, protein: 24, carbs: 0.2, fat: 0.3 }, keywords: ["虾仁", "虾", "shrimp"] },
+  { name: "豆腐", per100: { calories: 76, protein: 8, carbs: 1.9, fat: 4.8 }, keywords: ["豆腐", "tofu"] },
+  { name: "西兰花", per100: { calories: 34, protein: 2.8, carbs: 6.6, fat: 0.4 }, keywords: ["西兰花", "broccoli"] },
+  { name: "菠菜", per100: { calories: 23, protein: 2.9, carbs: 3.6, fat: 0.4 }, keywords: ["菠菜", "spinach"] },
+  { name: "牛奶", per100: { calories: 61, protein: 3.2, carbs: 4.8, fat: 3.3 }, keywords: ["牛奶", "milk"] },
+  { name: "无糖酸奶", per100: { calories: 59, protein: 10, carbs: 3.6, fat: 0.4 }, keywords: ["酸奶", "yogurt"] },
+  { name: "花生酱", per100: { calories: 588, protein: 25, carbs: 20, fat: 50 }, keywords: ["花生酱", "peanut butter"] },
+  { name: "杏仁", per100: { calories: 579, protein: 21, carbs: 22, fat: 50 }, keywords: ["杏仁", "almond"] },
+  { name: "橙子", per100: { calories: 47, protein: 0.9, carbs: 11.8, fat: 0.1 }, keywords: ["橙子", "orange"] }
 ];
 
 const mealNames = { breakfast: "早餐", lunch: "午餐", dinner: "晚餐", snack: "加餐" };
@@ -354,6 +373,57 @@ function nutritionFor(food, grams) {
   };
 }
 
+function normalizeRemoteFood(product) {
+  const nutriments = product.nutriments || {};
+  const calories =
+    Number(nutriments["energy-kcal_100g"]) ||
+    Number(nutriments["energy-kcal"]) ||
+    (Number(nutriments.energy_100g) ? Number(nutriments.energy_100g) / 4.184 : 0);
+  const protein = Number(nutriments.proteins_100g || nutriments.proteins || 0);
+  const carbs = Number(nutriments.carbohydrates_100g || nutriments.carbohydrates || 0);
+  const fat = Number(nutriments.fat_100g || nutriments.fat || 0);
+  const name = product.product_name || product.generic_name || product.brands || "";
+  if (!name || !calories) return null;
+  return {
+    name,
+    brand: product.brands || "",
+    image: product.image_front_small_url || product.image_small_url || "",
+    source: "Open Food Facts",
+    per100: {
+      calories: Math.round(calories),
+      protein: Number(protein.toFixed(1)),
+      carbs: Number(carbs.toFixed(1)),
+      fat: Number(fat.toFixed(1))
+    },
+    keywords: [name, product.brands, product.categories].filter(Boolean)
+  };
+}
+
+async function searchOpenFoodFacts(query) {
+  const url = new URL("https://world.openfoodfacts.org/cgi/search.pl");
+  url.searchParams.set("search_terms", query);
+  url.searchParams.set("search_simple", "1");
+  url.searchParams.set("action", "process");
+  url.searchParams.set("json", "1");
+  url.searchParams.set("page_size", "12");
+  url.searchParams.set("fields", "product_name,generic_name,brands,categories,nutriments,image_front_small_url,image_small_url");
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Open Food Facts 查询失败");
+  const data = await response.json();
+  return (data.products || []).map(normalizeRemoteFood).filter(Boolean).slice(0, 8);
+}
+
+async function searchNutritionDatabase(query) {
+  const local = getFoodCandidates(query, 8);
+  try {
+    const remote = await searchOpenFoodFacts(query);
+    const names = new Set(local.map((food) => food.name.toLowerCase()));
+    return [...local, ...remote.filter((food) => !names.has(food.name.toLowerCase()))].slice(0, 10);
+  } catch {
+    return local;
+  }
+}
+
 function applyFoodToForm(food, grams = 250) {
   document.getElementById("foodNameInput").value = food.name;
   document.getElementById("gramsInput").value = grams;
@@ -369,6 +439,50 @@ function updateNutritionFromFood() {
   document.getElementById("proteinInput").value = nutrition.protein;
   document.getElementById("carbInput").value = nutrition.carbs;
   document.getElementById("fatInput").value = nutrition.fat;
+}
+
+function renderFoodSearchResults(panel, title, detail, suggestions, imageUrl = "") {
+  panel.classList.add("active");
+  panel.innerHTML = `
+    ${
+      imageUrl
+        ? `<div class="photo-review"><img id="uploadedFoodPreview" src="${imageUrl}" alt="已上传的食物照片" /><div><strong>${title}</strong><p>${detail}</p></div></div>`
+        : `<div class="search-status"><strong>${title}</strong><p>${detail}</p></div>`
+    }
+    <div class="suggestion-grid">
+      ${suggestions
+        .map((food, index) => {
+          const nutrition = nutritionFor(food, 250);
+          const label = food.source ? `${food.source}${food.brand ? ` · ${food.brand}` : ""}` : "本地营养库";
+          return `
+            <button class="suggestion-button" type="button" data-suggestion="${index}">
+              <strong>${food.name}</strong>
+              <span>${label}</span>
+              <span>每100g ${food.per100.calories} kcal · 蛋白 ${food.per100.protein}g · 碳水 ${food.per100.carbs}g · 脂肪 ${food.per100.fat}g</span>
+              <span>按250g 约 ${nutrition.calories} kcal</span>
+            </button>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+  panel.querySelectorAll("[data-suggestion]").forEach((button) => {
+    button.addEventListener("click", () => applyFoodToForm(suggestions[Number(button.dataset.suggestion)], Number(document.getElementById("gramsInput").value || 250)));
+  });
+}
+
+async function lookupFoodFromInput() {
+  const query = document.getElementById("foodNameInput").value.trim();
+  const panel = document.getElementById("foodSearchPanel");
+  if (!query) {
+    panel.classList.add("active");
+    panel.innerHTML = `<div class="empty-state">请输入食物名称后再查询营养库。</div>`;
+    return;
+  }
+  panel.classList.add("active");
+  panel.innerHTML = `<div class="empty-state">正在查询本地营养库和 Open Food Facts...</div>`;
+  const suggestions = await searchNutritionDatabase(query);
+  renderFoodSearchResults(panel, "营养库查询结果", "请选择最接近的食物，系统会按克数自动填充热量和营养成分。", suggestions);
 }
 
 function getFoodCandidates(text, limit = 6) {
@@ -388,29 +502,7 @@ function getFoodCandidates(text, limit = 6) {
 }
 
 function renderSuggestionButtons(panel, imageUrl, title, detail, suggestions) {
-  panel.classList.add("active");
-  panel.innerHTML = `
-    <div class="photo-review">
-      <img id="uploadedFoodPreview" src="${imageUrl}" alt="已上传的食物照片" />
-      <div>
-        <strong>${title}</strong>
-        <p>${detail}</p>
-      </div>
-    </div>
-    <div class="suggestion-grid">
-      ${suggestions
-        .map((food, index) => {
-          const nutrition = nutritionFor(food, 250);
-          return `
-            <button class="suggestion-button" type="button" data-suggestion="${index}">
-              <strong>${food.name}</strong>
-              <span>250g 约 ${nutrition.calories} kcal · 蛋白 ${nutrition.protein}g</span>
-            </button>
-          `;
-        })
-        .join("")}
-    </div>
-  `;
+  renderFoodSearchResults(panel, title, detail, suggestions, imageUrl);
   panel.querySelectorAll("[data-suggestion]").forEach((button) => {
     button.addEventListener("click", () => applyFoodToForm(suggestions[Number(button.dataset.suggestion)], 250));
   });
@@ -440,21 +532,21 @@ async function showRecognitionSuggestions(file) {
     await waitForImage(image);
     const predictions = await model.classify(image, 5);
     const predictionText = predictions.map((item) => item.className).join(", ");
-    const suggestions = getFoodCandidates(predictionText, 6);
+    const suggestions = await searchNutritionDatabase(predictionText);
     renderSuggestionButtons(
       panel,
       imageUrl,
-      "CV 识别候选已生成",
-      `识别标签：${predictionText}。请选择最接近的食物，系统会按营养库自动计算。`,
+      "图片识别已连接营养库",
+      `CV 标签：${predictionText}。下方结果来自本地库和 Open Food Facts，请选择最接近的一项。`,
       suggestions
     );
   } catch (error) {
-    const suggestions = getFoodCandidates(file.name, 6);
+    const suggestions = await searchNutritionDatabase(file.name);
     renderSuggestionButtons(
       panel,
       imageUrl,
       "CV 模型暂时不可用",
-      "已切换为食物库候选。高精度识别需要后端视觉 API，静态网页不能安全保存 API 密钥。",
+      "已改用文件名和营养库搜索候选。高精度图片识别需要后端专用食物视觉 API。",
       suggestions
     );
   }
@@ -507,6 +599,7 @@ function bindEvents() {
   });
   document.getElementById("foodNameInput").addEventListener("input", updateNutritionFromFood);
   document.getElementById("gramsInput").addEventListener("input", updateNutritionFromFood);
+  document.getElementById("lookupFoodButton").addEventListener("click", lookupFoodFromInput);
   document.getElementById("mealForm").addEventListener("submit", (event) => {
     event.preventDefault();
     updateNutritionFromFood();

@@ -89,7 +89,7 @@
               <label>
                 性别
                 <select id="sexInput" required>
-                  <option value="" selected disabled>例如：女性</option>
+                  <option value="" selected disabled>请选择性别</option>
                   <option value="female">女性</option>
                   <option value="male">男性</option>
                 </select>
@@ -100,7 +100,7 @@
               <label>
                 活动水平
                 <select id="activityInput" required>
-                  <option value="" selected disabled>例如：每周训练 3-5 次</option>
+                  <option value="" selected disabled>请选择活动水平</option>
                   <option value="1.2">久坐</option>
                   <option value="1.375">轻度活动</option>
                   <option value="1.55">每周训练 3-5 次</option>
@@ -111,7 +111,7 @@
               <label>
                 健身目标
                 <select id="goalInput" required>
-                  <option value="" selected disabled>例如：减脂</option>
+                  <option value="" selected disabled>请选择健身目标</option>
                   <option value="fatLoss">减脂</option>
                   <option value="muscleGain">增肌</option>
                   <option value="maintain">维持</option>
@@ -176,6 +176,8 @@
                 <label>份量 g<input id="gramsInput" type="number" min="10" max="2000" placeholder="例如：250" /></label>
               </div>
               <datalist id="foodOptions"></datalist>
+              <button class="ghost-button lookup-button" id="lookupFoodButton" type="button">查询营养库</button>
+              <div class="recognition-panel" id="foodSearchPanel"></div>
 
               <div class="food-row">
                 <label>热量 kcal<input id="calorieInput" type="number" min="0" placeholder="自动计算" /></label>

@@ -535,6 +535,24 @@ select:focus {
   gap: 8px;
 }
 
+.search-status {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfa;
+}
+
+.search-status strong {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.search-status p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
 .suggestion-button {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -558,6 +576,10 @@ select:focus {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  margin-bottom: 12px;
+}
+
+.lookup-button {
   margin-bottom: 12px;
 }
 
