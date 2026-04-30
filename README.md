@@ -5,13 +5,11 @@ Low-cost food nutrition recognition web app.
 ## Architecture
 
 1. Frontend uploads a food image or accepts manual food input.
-2. Express backend keeps API keys out of the browser.
-3. Backend calls an OpenAI vision model and returns only food candidates:
-   - food name
+2. Image recognition runs in the browser with a free Food-101 image classifier via Transformers.js.
+3. Recognition returns only top 5 food candidates:
+   - label
    - confidence
-   - estimated grams
-   - whether user confirmation is required
-4. User edits food name and grams in the browser.
+4. User confirms or edits food name and grams in the browser.
 5. Backend queries USDA FoodData Central first.
 6. If USDA has no result, backend queries Open Food Facts.
 7. Backend calculates calories, protein, fat, and carbohydrate for the confirmed grams.
@@ -35,8 +33,6 @@ http://localhost:3000
 `.env` should contain:
 
 ```text
-OPENAI_API_KEY=sk-your-openai-api-key
-OPENAI_VISION_MODEL=gpt-4.1-mini
 USDA_API_KEY=your-usda-fooddata-central-api-key
 PORT=3000
 ```
@@ -45,7 +41,7 @@ PORT=3000
 
 ## Notes
 
-- The OpenAI key is used only by the backend.
-- Image recognition uses `detail: low` for lower cost.
+- No OpenAI API key is required for image recognition.
+- Browser image recognition is free and only for candidate suggestions.
 - Nutrition is not finalized until the user confirms or edits the food name and grams.
-- Any recognition candidate with confidence below `0.7` is marked as requiring user confirmation.
+- Any recognition candidate with confidence below `0.7` defaults to manual confirmation mode.

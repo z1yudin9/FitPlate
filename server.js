@@ -1,117 +1,29 @@
 import "dotenv/config";
 import express from "express";
-import multer from "multer";
-import OpenAI from "openai";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 8 * 1024 * 1024 }
-});
-
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
-const visionModel = process.env.OPENAI_VISION_MODEL || "gpt-4.1-mini";
 const port = Number(process.env.PORT || 3000);
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
-const recognitionSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    foods: {
-      type: "array",
-      maxItems: 6,
-      items: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          food_name: { type: "string" },
-          confidence: { type: "number", minimum: 0, maximum: 1 },
-          estimated_grams: { type: "number", minimum: 1 },
-          requires_confirmation: { type: "boolean" }
-        },
-        required: ["food_name", "confidence", "estimated_grams", "requires_confirmation"]
-      }
-    }
-  },
-  required: ["foods"]
-};
-
-function imageDataUrl(file) {
-  const mime = file.mimetype || "image/jpeg";
-  return `data:${mime};base64,${file.buffer.toString("base64")}`;
+function roundMacro(value) {
+  return Number(Number(value || 0).toFixed(1));
 }
 
-function parseResponseJson(response) {
-  const text = response.output_text || "";
-  try {
-    return JSON.parse(text);
-  } catch {
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("OpenAI response did not contain JSON");
-    return JSON.parse(match[0]);
-  }
+function calculateForGrams(per100g, grams) {
+  const ratio = Number(grams || 0) / 100;
+  return {
+    calories: Math.round(per100g.calories * ratio),
+    protein: roundMacro(per100g.protein * ratio),
+    fat: roundMacro(per100g.fat * ratio),
+    carbohydrate: roundMacro(per100g.carbohydrate * ratio)
+  };
 }
-
-function normalizeRecognizedFoods(payload) {
-  return (payload.foods || []).map((food) => ({
-    foodName: food.food_name,
-    confidence: Number(food.confidence || 0),
-    estimatedGrams: Math.max(1, Math.round(Number(food.estimated_grams || 100))),
-    requiresConfirmation: Boolean(food.requires_confirmation || Number(food.confidence || 0) < 0.7)
-  }));
-}
-
-app.post("/api/recognize", upload.single("image"), async (req, res) => {
-  try {
-    if (!openai) {
-      return res.status(500).json({ error: "OPENAI_API_KEY is not configured on the server." });
-    }
-    if (!req.file) return res.status(400).json({ error: "Image file is required." });
-
-    const response = await openai.responses.create({
-      model: visionModel,
-      input: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "input_text",
-              text:
-                "Identify edible food items visible in this image. Return only likely food candidates, not nutrition facts. " +
-                "Estimate grams conservatively. Set requires_confirmation true when the item is ambiguous, partially hidden, mixed, or confidence is below 0.7."
-            },
-            { type: "input_image", image_url: imageDataUrl(req.file), detail: "low" }
-          ]
-        }
-      ],
-      text: {
-        format: {
-          type: "json_schema",
-          name: "food_recognition",
-          schema: recognitionSchema,
-          strict: true
-        }
-      }
-    });
-
-    res.json({ foods: normalizeRecognizedFoods(parseResponseJson(response)) });
-  } catch (error) {
-    const status = error.status || error.code;
-    if (status === 401 || String(error.message || "").includes("Incorrect API key")) {
-      return res.status(401).json({
-        error: "OpenAI API key 无效。请检查项目根目录 .env 中的 OPENAI_API_KEY，重启 npm start 后再试。"
-      });
-    }
-    res.status(500).json({ error: error.message || "Food recognition failed." });
-  }
-});
 
 function nutrientMapFromUsda(food) {
   const nutrients = food.foodNutrients || [];
@@ -154,20 +66,6 @@ function normalizeOpenFoodFacts(product) {
       fat: roundMacro(Number(n.fat_100g || 0)),
       carbohydrate: roundMacro(Number(n.carbohydrates_100g || 0))
     }
-  };
-}
-
-function roundMacro(value) {
-  return Number(Number(value || 0).toFixed(1));
-}
-
-function calculateForGrams(per100g, grams) {
-  const ratio = Number(grams || 0) / 100;
-  return {
-    calories: Math.round(per100g.calories * ratio),
-    protein: roundMacro(per100g.protein * ratio),
-    fat: roundMacro(per100g.fat * ratio),
-    carbohydrate: roundMacro(per100g.carbohydrate * ratio)
   };
 }
 
@@ -231,11 +129,11 @@ app.post("/api/nutrition", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
-    openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
+    recognition: "free-browser-cv",
     usdaConfigured: Boolean(process.env.USDA_API_KEY)
   });
 });
 
 app.listen(port, () => {
-  console.log(`FitPlate nutrition recognition server running at http://localhost:${port}`);
+  console.log(`FitPlate nutrition app running at http://localhost:${port}`);
 });

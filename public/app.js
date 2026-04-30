@@ -28,6 +28,9 @@ const defaultState = {
 
 let state = loadState();
 let recognizedFoods = [];
+let foodClassifierPromise = null;
+
+const food101Model = "ashaduzzaman/vit-finetuned-food101";
 
 function loadState() {
   try {
@@ -352,6 +355,23 @@ function fillNutritionFields(candidate, grams) {
   document.getElementById("fatInput").value = total.fat;
 }
 
+function normalizeFoodLabel(label) {
+  return String(label || "")
+    .replace(/_/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function getFoodClassifier() {
+  if (!foodClassifierPromise) {
+    foodClassifierPromise = import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1").then(async ({ pipeline, env }) => {
+      env.allowLocalModels = false;
+      return pipeline("image-classification", food101Model, { dtype: "q8" });
+    });
+  }
+  return foodClassifierPromise;
+}
+
 async function lookupNutrition(foodName, grams, targetPanel) {
   const panel = targetPanel || document.getElementById("foodSearchPanel");
   if (!foodName) {
@@ -408,8 +428,8 @@ function renderRecognizedCandidates(panel, imageUrl, foods) {
     <div class="photo-review">
       <img src="${imageUrl}" alt="已上传的食物照片" />
       <div>
-        <strong>后端识别候选</strong>
-        <p>请确认或修改食物名称和克数。置信度低于 70% 的结果必须人工确认。</p>
+        <strong>免费 CV 识别候选</strong>
+        <p>图片识别仅供参考，营养计算基于用户确认的食物和重量。请确认或修改食物名称和克数。</p>
       </div>
     </div>
     <div class="candidate-list">
@@ -438,18 +458,26 @@ function renderRecognizedCandidates(panel, imageUrl, foods) {
 async function showRecognitionSuggestions(file) {
   const panel = document.getElementById("recognitionPanel");
   const imageUrl = URL.createObjectURL(file);
-  setLogStatus(panel, "正在发送图片到后端，由 OpenAI Vision 识别候选食物...");
-  const formData = new FormData();
-  formData.append("image", file);
+  setLogStatus(panel, "正在加载免费的 Food-101 浏览器端模型。首次加载可能需要一点时间...");
   try {
-    const data = await apiJson("/api/recognize", { method: "POST", body: formData });
-    if (!data.foods?.length) {
-      setLogStatus(panel, "没有识别到明确食物，请手动输入食物名称。");
-      return;
+    const classifier = await getFoodClassifier();
+    const predictions = await classifier(imageUrl, { topk: 5 });
+    const foods = predictions.slice(0, 5).map((item) => ({
+      foodName: normalizeFoodLabel(item.label),
+      confidence: Number(item.score || 0),
+      estimatedGrams: 100,
+      requiresConfirmation: Number(item.score || 0) < 0.7
+    }));
+    renderRecognizedCandidates(panel, imageUrl, foods);
+    if (!foods.length || foods[0].confidence < 0.7) {
+      document.getElementById("foodNameInput").value = foods[0]?.foodName || "";
+      document.getElementById("gramsInput").value = 100;
+      document.getElementById("foodSearchPanel").classList.add("active");
+      document.getElementById("foodSearchPanel").innerHTML =
+        `<div class="empty-state">图片识别置信度低于 70%，已进入手动确认模式。请修改食物名称和克数后点击“查询营养库并自动填充”。</div>`;
     }
-    renderRecognizedCandidates(panel, imageUrl, data.foods);
   } catch (error) {
-    setLogStatus(panel, error.message, "empty-state error-state");
+    setLogStatus(panel, `免费 CV 模型加载失败：${error.message}。请改用手动输入食物名称和克数。`, "empty-state error-state");
   }
 }
 

@@ -166,27 +166,27 @@
               <label class="upload-box" for="photoInput">
                 <input id="photoInput" type="file" accept="image/*" />
                 <span>上传食物照片</span>
-                <small id="photoName">上传后由后端调用 OpenAI Vision 识别候选，API key 不暴露在前端</small>
+                <small id="photoName">图片识别仅供参考，营养计算基于用户确认的食物和重量</small>
               </label>
 
               <div class="recognition-panel" id="recognitionPanel"></div>
 
               <div class="food-row">
                 <label>食物<input id="foodNameInput" type="text" list="foodOptions" placeholder="例如：鸡胸肉糙米饭" /></label>
-                <label>份量 g<input id="gramsInput" type="number" min="10" max="2000" placeholder="例如：250" /></label>
+                <label>份量 g<input id="gramsInput" type="number" min="10" max="2000" step="1" placeholder="例如：250" /></label>
               </div>
               <datalist id="foodOptions"></datalist>
               <button class="ghost-button lookup-button" id="lookupFoodButton" type="button">查询营养库并自动填充</button>
               <div class="recognition-panel" id="foodSearchPanel"></div>
 
               <div class="food-row">
-                <label>热量 kcal<input id="calorieInput" type="number" min="0" placeholder="自动计算" /></label>
-                <label>蛋白质 g<input id="proteinInput" type="number" min="0" placeholder="自动计算" /></label>
+                <label>热量 kcal<input id="calorieInput" type="number" min="0" step="0.1" placeholder="自动计算" /></label>
+                <label>蛋白质 g<input id="proteinInput" type="number" min="0" step="0.1" placeholder="自动计算" /></label>
               </div>
 
               <div class="food-row">
-                <label>碳水 g<input id="carbInput" type="number" min="0" placeholder="自动计算" /></label>
-                <label>脂肪 g<input id="fatInput" type="number" min="0" placeholder="自动计算" /></label>
+                <label>碳水 g<input id="carbInput" type="number" min="0" step="0.1" placeholder="自动计算" /></label>
+                <label>脂肪 g<input id="fatInput" type="number" min="0" step="0.1" placeholder="自动计算" /></label>
               </div>
 
               <button class="primary-button" type="submit">添加记录</button>
