@@ -30,7 +30,7 @@ let state = loadState();
 let recognizedFoods = [];
 let foodClassifierPromise = null;
 
-const food101Model = "ashaduzzaman/vit-finetuned-food101";
+const food101Model = "Xenova/food101";
 
 function loadState() {
   try {
@@ -364,9 +364,9 @@ function normalizeFoodLabel(label) {
 
 async function getFoodClassifier() {
   if (!foodClassifierPromise) {
-    foodClassifierPromise = import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1").then(async ({ pipeline, env }) => {
+    foodClassifierPromise = import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2").then(async ({ pipeline, env }) => {
       env.allowLocalModels = false;
-      return pipeline("image-classification", food101Model, { dtype: "q8" });
+      return pipeline("image-classification", food101Model);
     });
   }
   return foodClassifierPromise;
